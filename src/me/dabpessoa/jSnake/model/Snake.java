@@ -14,9 +14,11 @@ public class Snake {
 	
 	private List<Node> nodes;
 	private double speed;
+	private double shiftCounter;
 	
 	public Snake() {
-		speed = 1;
+		speed = 1.0d;
+		shiftCounter = 0d;
 	}
 	
 	public Snake(int size) {
@@ -26,33 +28,49 @@ public class Snake {
 	
 	public void initNodes(Integer size) {
 		this.nodes = new ArrayList<>();
-		for (int i = 0 ; i < size ; i++) {
-			Node node = Node.createDefaultNode();
-			nodes.add(node);
+		
+		// Add Head.
+		addNode(0,0);
+		
+		// Add others.
+		int height = Node.DEFAULT_NODE_SIZE.height;
+		for (int i = 1 ; i < size ; i++) {
+			addNode(0, height * i);
 		}
 	}
 	
 	public void addNode() {
+		addNode(null, null);
+	}
+	
+	public void addNode(Integer positionX, Integer positionY) {
 		Node node = Node.createDefaultNode();
-		node.setPositionX(nodes.get(nodes.size()-1).getPositionX() + Node.DEFAULT_NODE_SIZE.width);
-		node.setPositionY(nodes.get(nodes.size()-1).getPositionY() + Node.DEFAULT_NODE_SIZE.height);
-		
+		if (positionX != null) node.setPositionX(positionX);
+		if (positionY != null) node.setPositionY(positionY);
 		this.nodes.add(node);
 	}
 	
+	public void checkAddSpeed() {
+		if (getNodes().size() % 3 == 0) {
+			addSpeed();
+		}
+	}
+	
 	public void addSpeed() {
-		setSpeed(getSpeed() + 1);
+		setSpeed(getSpeed() + 0.1d);
 	}
 	
 	public void processLogics(Long elapsedTime, Direction direction, Dimension windowSize) {
-		// Fazer os outros nós seguirem o primeiro.
-		for (int i = nodes.size()-1 ; i > 0; i--) {
-			nodes.get(i).setPositionX(nodes.get(i-1).getPositionX());
-			nodes.get(i).setPositionY(nodes.get(i-1).getPositionY());
+		if (shouldMove(elapsedTime)) {
+			// Fazer os outros nós seguirem o primeiro.
+			for (int i = nodes.size() - 1 ; i > 0 ; i--) {
+				nodes.get(i).setPositionX(nodes.get(i - 1).getPositionX());
+				nodes.get(i).setPositionY(nodes.get(i - 1).getPositionY());
+			}
+			
+			verificarDirecaoPrimeiroNo(direction, elapsedTime);
+			verificarPassagemPorBordasDaJanela(windowSize, elapsedTime);
 		}
-		
-		verificarPassagemPorBordasDaJanela(windowSize, elapsedTime);
-		verificarDirecao(direction, elapsedTime);
 	}
 	
 	/**
@@ -74,29 +92,36 @@ public class Snake {
 		}
 	}
 	
-	private void verificarDirecao(Direction direction, Long elapsedTime) {
+	private void verificarDirecaoPrimeiroNo(Direction direction, Long elapsedTime) {
 		if (getFirstNode() == null ) return;
 		if (direction == null) direction = Direction.RIGHT;
 		
-		double seconds = elapsedTime.doubleValue()/1000000000;
-		Long shift = Math.round(seconds * getSpeed() * Node.DEFAULT_NODE_SIZE.getWidth());
-		if (shift <= 0) shift = 1l;
-		
 		switch (direction) {
 			case RIGHT: {
-				getFirstNode().setPositionX(getFirstNode().getPositionX() + shift.intValue());
+				getHead().setPositionX(getHead().getPositionX() + Node.DEFAULT_NODE_SIZE.width);
 			} break;
 			case LEFT: {
-				getFirstNode().setPositionX(getFirstNode().getPositionX() - shift.intValue());
+				getHead().setPositionX(getHead().getPositionX() - Node.DEFAULT_NODE_SIZE.width);
 			} break;
 			case UP: {
-				getFirstNode().setPositionY(getFirstNode().getPositionY() - shift.intValue());
+				getHead().setPositionY(getHead().getPositionY() - Node.DEFAULT_NODE_SIZE.height);
 			} break;
 			case DOWN: {
-				getFirstNode().setPositionY(getFirstNode().getPositionY() + shift.intValue());
+				getHead().setPositionY(getHead().getPositionY() + Node.DEFAULT_NODE_SIZE.height);
 			} break;
 			default: {} break;
 		}
+	}
+	
+	public boolean shouldMove(Long elapsedTime) {
+		double seconds = elapsedTime.doubleValue()/1000000000;
+		
+		shiftCounter += seconds * getSpeed() * Node.DEFAULT_NODE_SIZE.getWidth(); // Deslocamento de blocos (Nodes) por segundo.
+		
+		boolean shouldMove = shiftCounter >= 1;
+		if (shouldMove) shiftCounter = 0;
+		
+		return shouldMove;
 	}
 	
 	public void render(Graphics graphics) {

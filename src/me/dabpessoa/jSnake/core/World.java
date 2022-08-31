@@ -1,5 +1,6 @@
 package me.dabpessoa.jSnake.core;
 
+import java.awt.EventQueue;
 import java.awt.Graphics;
 
 import me.dabpessoa.jSnake.gameLoop.GameLoop;
@@ -39,7 +40,7 @@ public class World implements LoopSteps, FrameCounterListener, GameLoopCounterLi
 		if(colisao) {
 			score++;
 			getSnake().addNode();
-			getSnake().addSpeed();
+			getSnake().checkAddSpeed();
 		}
 	}
 
@@ -61,14 +62,16 @@ public class World implements LoopSteps, FrameCounterListener, GameLoopCounterLi
 	}
 	
 	public void startRolling() {
-		getWindow().showFrame("JSnake");
-		
 		GameLoop loop = new GameLoop(this, DEFAULT_FPS);
 		loop.addFrameCounterListener(this);
 		loop.addGameLoopCounterListener(this);
 		
-		Thread thread = new Thread(loop);
-		thread.start();
+		EventQueue.invokeLater(() -> {
+			getWindow().showFrame("JSnake");
+			
+			Thread thread = new Thread(loop);
+			thread.start();
+		});
 	}
 	
 	@Override

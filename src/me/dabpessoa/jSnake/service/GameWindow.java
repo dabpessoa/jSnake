@@ -33,7 +33,6 @@ public class GameWindow extends Canvas implements KeyListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
-		
 		frame.setVisible(true);
 	}
 	
