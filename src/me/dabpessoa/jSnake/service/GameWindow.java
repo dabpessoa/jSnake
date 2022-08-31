@@ -54,6 +54,18 @@ public class GameWindow extends Canvas implements KeyListener {
         graphics.drawString(msg, (getPreferredSize().width - metr.stringWidth(msg)) / 2, getPreferredSize().height / 2);
     }
 	
+	public void renderScore(Integer score) {
+		Graphics graphics = getGameGraphics().getGraphics();
+		
+        String msg = "Score: "+score;
+        Font small = new Font("Helvetica", Font.BOLD, 13);
+        FontMetrics metr = getFontMetrics(small);
+
+        graphics.setColor(Color.white);
+        graphics.setFont(small);
+        graphics.drawString(msg, (getPreferredSize().width - metr.stringWidth(msg) - 10), getPreferredSize().height - 10);
+	}
+	
 	public void updateAndReleaseGraphics() {
 		Toolkit.getDefaultToolkit().sync();
 		getGameGraphics().getGraphics().dispose();
@@ -66,12 +78,16 @@ public class GameWindow extends Canvas implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			if (direction == Direction.LEFT) return; // Não pode inverter o sentido.
 			direction = Direction.RIGHT;
 		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			if (direction == Direction.RIGHT) return; // Não pode inverter o sentido.
 			direction = Direction.LEFT;
 		} else if (e.getKeyCode() == KeyEvent.VK_UP) {
+			if (direction == Direction.DOWN) return; // Não pode inverter o sentido.
 			direction = Direction.UP;
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+			if (direction == Direction.UP) return; // Não pode inverter o sentido.
 			direction = Direction.DOWN;
 		}
 	}

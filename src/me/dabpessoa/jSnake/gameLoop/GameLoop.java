@@ -58,8 +58,7 @@ public class GameLoop implements Runnable {
 								
 				lastLoopTime = System.nanoTime();
 				while(isRunning()) {
-					
-					
+				
 					long time = System.nanoTime();
 					long elapsedTime = time - lastLoopTime;
 					lastLoopTime = time;
@@ -102,7 +101,6 @@ public class GameLoop implements Runnable {
 	                    overSleepTime = 0L;
 	                    yieldIfNeed();
 	                }
-					
 					
 				}
 				

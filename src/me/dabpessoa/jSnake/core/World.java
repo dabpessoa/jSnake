@@ -15,9 +15,11 @@ public class World implements LoopSteps, FrameCounterListener, GameLoopCounterLi
 
 	private static final Integer DEFAULT_FPS = 60;
 	
+	private GameLoop loop;
 	private GameWindow window;
 	private Snake snake;
 	private Apple apple;
+	private boolean gameOver;
 	
 	private Integer score;
 	
@@ -36,6 +38,12 @@ public class World implements LoopSteps, FrameCounterListener, GameLoopCounterLi
 	public void processLogics(Long elapsedTime) {
 		getSnake().processLogics(elapsedTime, getWindow().getDirection(), getWindow().getPreferredSize());
 		
+		boolean snakeCollision = getSnake().checkSnakeCollision();
+		if (snakeCollision) {
+			gameOver();
+			return;
+		}
+		
 		boolean colisao = getApple().verificaColisaoComCobra(getSnake().getHead(), getWindow().getPreferredSize());
 		if(colisao) {
 			score++;
@@ -53,16 +61,21 @@ public class World implements LoopSteps, FrameCounterListener, GameLoopCounterLi
 		getSnake().render(graphics);
 		getApple().render(graphics);
 		
+		getWindow().renderScore(score);
+		
 		getWindow().updateAndReleaseGraphics();
 	}
 
 	@Override
 	public void tearDown() {
-		
+		if (gameOver) {
+			getWindow().renderGameOver();
+			getWindow().updateAndReleaseGraphics();
+		}
 	}
 	
 	public void startRolling() {
-		GameLoop loop = new GameLoop(this, DEFAULT_FPS);
+		loop = new GameLoop(this, DEFAULT_FPS);
 		loop.addFrameCounterListener(this);
 		loop.addGameLoopCounterListener(this);
 		
@@ -72,6 +85,11 @@ public class World implements LoopSteps, FrameCounterListener, GameLoopCounterLi
 			Thread thread = new Thread(loop);
 			thread.start();
 		});
+	}
+	
+	public void gameOver() {
+		gameOver = true;
+		loop.stop();
 	}
 	
 	@Override
@@ -114,6 +132,10 @@ public class World implements LoopSteps, FrameCounterListener, GameLoopCounterLi
 
 	public void setScore(Integer score) {
 		this.score = score;
+	}
+	
+	public GameLoop getLoop() {
+		return loop;
 	}
 
 }

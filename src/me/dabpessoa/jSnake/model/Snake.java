@@ -3,6 +3,7 @@ package me.dabpessoa.jSnake.model;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +55,18 @@ public class Snake {
 		if (getNodes().size() % 3 == 0) {
 			addSpeed();
 		}
+	}
+	
+	public boolean checkSnakeCollision() {
+		for (int i = 0 ; i < nodes.size() ; i++) {
+			for (int j = i+1 ; j < nodes.size() ; j++) {
+				Rectangle rect1 = new Rectangle(nodes.get(i).getPositionX(), nodes.get(i).getPositionY(), Node.DEFAULT_NODE_SIZE.width, Node.DEFAULT_NODE_SIZE.height);
+				Rectangle rect2 = new Rectangle(nodes.get(j).getPositionX(), nodes.get(j).getPositionY(), Node.DEFAULT_NODE_SIZE.width, Node.DEFAULT_NODE_SIZE.height);
+				if (rect1.intersects(rect2)) {
+					return true;
+				}
+			}
+		} return false;
 	}
 	
 	public void addSpeed() {
