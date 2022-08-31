@@ -33,11 +33,9 @@ public class World implements LoopSteps, FrameCounterListener, GameLoopCounterLi
 	
 	@Override
 	public void processLogics(Long elapsedTime) {
-		getSnake().processLogics(elapsedTime);
-		getSnake().verificarPassagemPorBordasDaJanela(getWindow().getPreferredSize(), elapsedTime);
-		getSnake().verificarDirecao(getWindow().getDirection(), elapsedTime);
+		getSnake().processLogics(elapsedTime, getWindow().getDirection(), getWindow().getPreferredSize());
 		
-		boolean colisao = getApple().verificaColisaoComCobra(getSnake().getFirstNode(), getWindow().getPreferredSize());
+		boolean colisao = getApple().verificaColisaoComCobra(getSnake().getHead(), getWindow().getPreferredSize());
 		if(colisao) {
 			score++;
 			getSnake().addNode();

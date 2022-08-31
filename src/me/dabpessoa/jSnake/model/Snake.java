@@ -44,19 +44,22 @@ public class Snake {
 		setSpeed(getSpeed() + 1);
 	}
 	
-	public void processLogics(Long elapsedTime) {
+	public void processLogics(Long elapsedTime, Direction direction, Dimension windowSize) {
 		// Fazer os outros nós seguirem o primeiro.
 		for (int i = nodes.size()-1 ; i > 0; i--) {
 			nodes.get(i).setPositionX(nodes.get(i-1).getPositionX());
 			nodes.get(i).setPositionY(nodes.get(i-1).getPositionY());
 		}
+		
+		verificarPassagemPorBordasDaJanela(windowSize, elapsedTime);
+		verificarDirecao(direction, elapsedTime);
 	}
 	
 	/**
 	 *  Fazer com que ao chegar no final da janela a cobra apareça do outro lado.
 	 * @param windowSize
 	 */
-	public void verificarPassagemPorBordasDaJanela(Dimension windowSize, Long elapsedTime) {
+	private void verificarPassagemPorBordasDaJanela(Dimension windowSize, Long elapsedTime) {
 		if (getFirstNode() == null) return;
 		
 		if (getFirstNode().getPositionX() + getFirstNode().getWidth() < 0) {
@@ -71,7 +74,7 @@ public class Snake {
 		}
 	}
 	
-	public void verificarDirecao(Direction direction, Long elapsedTime) {
+	private void verificarDirecao(Direction direction, Long elapsedTime) {
 		if (getFirstNode() == null ) return;
 		if (direction == null) direction = Direction.RIGHT;
 		
@@ -105,6 +108,10 @@ public class Snake {
 	
 	public static Snake createDefaultSnake() {
 		return new Snake(DEFAULT_SNAKE_SIZE);
+	}
+	
+	public Node getHead() {
+		return getFirstNode();
 	}
 	
 	public Node getFirstNode() {

@@ -3,7 +3,10 @@ package me.dabpessoa.jSnake.service;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -36,12 +39,24 @@ public class GameWindow extends Canvas implements KeyListener {
 	
 	public void renderBackground() {
 		Graphics graphics = getGameGraphics().getGraphics();
-		
 		graphics.setColor(Color.black);
 		graphics.fillRect(0, 0, 480, 480);
 	}
 	
+	public void renderGameOver() {
+		Graphics graphics = getGameGraphics().getGraphics();
+		
+        String msg = "Game Over";
+        Font small = new Font("Helvetica", Font.BOLD, 16);
+        FontMetrics metr = getFontMetrics(small);
+
+        graphics.setColor(Color.white);
+        graphics.setFont(small);
+        graphics.drawString(msg, (getPreferredSize().width - metr.stringWidth(msg)) / 2, getPreferredSize().height / 2);
+    }
+	
 	public void updateAndReleaseGraphics() {
+		Toolkit.getDefaultToolkit().sync();
 		getGameGraphics().getGraphics().dispose();
 		getGameGraphics().checkBufferStrategy().show();
 	}
